@@ -1,41 +1,23 @@
-# -*- coding: cp1252 -*-
-
 from tkinter import *
 from random import randrange
 
+pts = 0
+record = 0
+car = [0] *4        
+car_coord = [[0, 0, 0, 0]] *4      
+arret_bcl = 0       
+temp = [[0,0]]*2    
+pom_la, pom_ov, pomx, pomy = -1, 0, 0, 0
 
-def avancer ():
-    global car_coord, step, arret_bcl, car, pts, temp
-    pomme()         
-    
-    
-    i = 0
-    while (i <= (len(car)-1)):
-        car_coord[i][0] = car_coord[i][0] + car_coord[i][2]
-        car_coord[i][1] = car_coord[i][1] + car_coord[i][3]
-        canv.coords(car[i], car_coord[i][0], car_coord[i][1], car_coord[i][0] + 10, car_coord[i][1] + 10)
-        
-        if (i == 0):
-            temp[0] = [car_coord[i][2], car_coord[i][3]]
-        else :
-            temp[1] = [car_coord[i][2], car_coord[i][3]]
-            car_coord[i][2] = temp[0][0]
-            car_coord[i][3] = temp[0][1]
-            temp[0] = temp[1]
+fen = Tk()
+fen.title('{Snake}')
 
-            
-            if ((car_coord[0][0] == car_coord[i][0]) and (car_coord[0][1] == car_coord[i][1])):
-                arret_bcl = 1                
-        i = i + 1
-    
-    if ((car_coord[0][0] == 0) or (car_coord[0][0] == 590)):
-        arret_bcl = 1
-    elif ((car_coord[0][1] == 0) or (car_coord[0][1] == 390)):
-        arret_bcl = 1
-
-    if (arret_bcl == 0):
-        fen.after(50, avancer)
-
+lb_pts = Label(fen, text='Points = 0')
+lb_pts.grid(row=0, column=0, sticky=W, padx=10)
+lb_record = Label(fen, text='Record = 0')
+lb_record.grid(row=0, column=1, sticky=E, padx=20)
+canv = Canvas(fen, width=600, height=400, bg='black')
+canv.grid(row=1, column=0, columnspan=2)
     
 def commencer():
     global car_coord, car, pts, arret_bcl, temp, pom_la, pom_ov, pomx, pomy
@@ -65,11 +47,44 @@ def commencer():
         car[i] = canv.create_rectangle(car_coord[i][0], car_coord[i][1], car_coord[i][0] + 10, car_coord[i][1] + 10, fill='white')
 
         i = i + 1
-    avancer()   
+    avancer()
+    
+def avancer ():
+    global car_coord, step, arret_bcl, car, pts, temp
+    pomme()
+    lb_pts.configure(text="Points = " + str(pts))
+    lb_record.configure(text="Record = " + str(record))
+    
+    i = 0
+    while (i <= (len(car)-1)):
+        car_coord[i][0] = car_coord[i][0] + car_coord[i][2]
+        car_coord[i][1] = car_coord[i][1] + car_coord[i][3]
+        canv.coords(car[i], car_coord[i][0], car_coord[i][1], car_coord[i][0] + 10, car_coord[i][1] + 10)
+        
+        if (i == 0):
+            temp[0] = [car_coord[i][2], car_coord[i][3]]
+        else :
+            temp[1] = [car_coord[i][2], car_coord[i][3]]
+            car_coord[i][2] = temp[0][0]
+            car_coord[i][3] = temp[0][1]
+            temp[0] = temp[1]
+
+            
+            if ((car_coord[0][0] == car_coord[i][0]) and (car_coord[0][1] == car_coord[i][1])):
+                arret_bcl = 1                
+        i = i + 1
+    
+    if ((car_coord[0][0] == 0) or (car_coord[0][0] == 590)):
+        arret_bcl = 1
+    elif ((car_coord[0][1] == 0) or (car_coord[0][1] == 390)):
+        arret_bcl = 1
+
+    if (arret_bcl == 0):
+        fen.after(50, avancer)
 
     
 def pomme ():
-    global pom_la, pom_ov, pomx, pomy, car, car_coord, pts
+    global pom_la, pom_ov, pomx, pomy, car, car_coord, pts, record
     if (pom_la == 1):
         if ((car_coord[0][0] == pomx) and (car_coord[0][1] == pomy)):
             car.append(0)         
@@ -80,12 +95,13 @@ def pomme ():
             car[len(car)-1] = canv.create_rectangle(x, y, x+10, y+10, fill='green')
             
             pts = pts + 10      
-            lb_pts.configure(text="Points = " + str(pts))   
+            if(pts > record):
+                record = pts
             pom_la = 0
     else:
         pomx, pomy = (randrange(57) + 1)*10, (randrange(38) + 1)*10
         if (pom_la != 0):
-            pom_ov = canv.create_rectangle(pomx, pomy, pomx+10, pomy+10, fill='green')
+            pom_ov = canv.create_rectangle(pomx, pomy, pomx+10, pomy+10, fill='red')
         else :
             canv.coords(pom_ov, pomx, pomy, pomx+10, pomy+10)
         pom_la = 1
@@ -114,35 +130,14 @@ def down(event):
     if (car_coord[0][3] != -10):
         car_coord[0][2] = 0
         car_coord[0][3] = 10
-
-
-pts = 0        
-car = [0] *4        
-car_coord = [[0, 0, 0, 0]] *4      
-arret_bcl = 0       
-temp = [[0,0]]*2    
-pom_la, pom_ov, pomx, pomy = -1, 0, 0, 0      
-
-
-fen = Tk()
-fen.title('{Snake}')
+        
 fen.bind("<Left>", left)
 fen.bind("<Right>", right)
 fen.bind("<Up>", up)
 fen.bind("<Down>", down)
-
-
-Label(fen, text='RECORD = 410 points ', font="weight=BOLD").grid(row=0, sticky=W, padx=10)
-lb_pts = Label(fen, text='Points = aucun')
-lb_pts.grid(row=0, column=1, sticky=E, padx=20)
-canv = Canvas(fen, width=600, height=400, bg='black')
-canv.grid(row=1, column=0, columnspan=2)
 Button(fen, text='Nouvelle Partie', command=commencer).grid(row=2, column=0, padx=30, pady=30)
-Button(fen, text='Quitter', command=fen.quit).grid(row=2, column=1, padx=30, pady=30)
+Button(fen, text='Quitter', command=fen.destroy).grid(row=2, column=1, padx=30, pady=30)
 
 # Main :
 fen.mainloop()
-
-# After main :
-fen.destroy()
 
