@@ -101,7 +101,7 @@ def pomme ():
     else:
         pomx, pomy = (randrange(57) + 1)*10, (randrange(38) + 1)*10
         if (pom_la != 0):
-            pom_ov = canv.create_rectangle(pomx, pomy, pomx+10, pomy+10, fill='red')
+            pom_ov = canv.create_rectangle(pomx, pomy, pomx+10, pomy+10, fill='green')
         else :
             canv.coords(pom_ov, pomx, pomy, pomx+10, pomy+10)
         pom_la = 1
